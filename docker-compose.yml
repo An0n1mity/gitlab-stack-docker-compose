@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    container_name: gitlab
+    restart: always
+    hostname: 'gitlab.example.com'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.example.com'
+    ports:
+      - '80:80'
+      - '443:443'
+      - '2222:22'
+    volumes:
+      - '/srv/config:/etc/gitlab'
+      - '/srv/logs:/var/log/gitlab'
+      - '/srv/data:/var/opt/gitlab'
+    shm_size: '256m'
+    networks:
+      - gitlab-network
+    
+  gitlab-runner:
+    image: gitlab/gitlab-runner:latest
+    container_name: gitlab-runner
+    restart: always
+    depends_on:
+      - gitlab
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '/srv/gitlab-runner/config:/etc/gitlab-runner'
+    networks:
+      - gitlab-network
+
+networks:
+  gitlab-network:
+    driver: bridge
