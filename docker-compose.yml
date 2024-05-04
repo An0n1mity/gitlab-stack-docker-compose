@@ -35,4 +35,5 @@ services:
 
 networks:
   gitlab-network:
+    name: gitlab-network
     driver: bridge
